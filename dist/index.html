@@ -2,167 +2,549 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Template Staging Area</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Staging Canvas | 3D Template Showcase</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        /* animated background: deep flowing gradient with moving particles via pseudo-elements */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Poppins', sans-serif;
             min-height: 100vh;
-            padding: 40px 20px;
+            background: radial-gradient(circle at 20% 30%, #0a0f2a, #030617);
+            position: relative;
+            overflow-x: hidden;
+            padding: 50px 24px;
         }
-        
+
+        /* animated wave / grain overlay for extra depth */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 40% 60%, rgba(120, 80, 200, 0.15), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: subtleShift 14s infinite alternate ease-in-out;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 2px, transparent 2px, transparent 8px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes subtleShift {
+            0% { opacity: 0.4; transform: scale(1) translate(0, 0); }
+            100% { opacity: 0.8; transform: scale(1.2) translate(3%, 2%); }
+        }
+
+        /* floating orbs / animated background elements */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            animation: floatOrb 18s infinite alternate;
+        }
+
+        .orb-1 {
+            width: 50vw;
+            height: 50vw;
+            background: #4f46e5;
+            top: -20vh;
+            left: -20vw;
+            animation-duration: 22s;
+        }
+
+        .orb-2 {
+            width: 60vw;
+            height: 60vw;
+            background: #ec4899;
+            bottom: -30vh;
+            right: -30vw;
+            animation-duration: 26s;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 40vw;
+            height: 40vw;
+            background: #06b6d4;
+            top: 40%;
+            left: 60%;
+            animation-duration: 19s;
+            filter: blur(90px);
+            opacity: 0.25;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 8%) scale(1.2); }
+        }
+
+        /* container with relative stacking */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
         }
-        
+
+        /* modern typography + glassmorphism header */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            backdrop-filter: blur(4px);
+        }
+
         h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2.5rem;
+            font-size: clamp(2.2rem, 7vw, 3.8rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #c0b9ff, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
         .subtitle {
-            color: rgba(255,255,255,0.9);
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 4vw, 1.25rem);
+            color: rgba(245, 240, 255, 0.85);
+            font-weight: 400;
+            backdrop-filter: blur(5px);
+            display: inline-block;
+            padding: 0 20px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        
+
+        /* 3D card grid - responsive, modern, perspective */
         .templates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px 32px;
+            perspective: 1200px;
         }
-        
+
+        /* 3D card container with smooth transition + hover lift + rotation */
         .template-card {
-            background: white;
-            border-radius: 15px;
+            background: rgba(18, 22, 45, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 25px 40px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.4s ease, border-color 0.2s;
+            transform-style: preserve-3d;
+            transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+            cursor: pointer;
         }
-        
+
+        /* sophisticated 3D tilt effect & scaling */
         .template-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-12px) rotateX(3deg) rotateY(5deg) scale(1.02);
+            box-shadow: 0 35px 45px -18px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,240,0.25) inset;
+            border-color: rgba(167, 139, 250, 0.6);
+            background: rgba(25, 30, 55, 0.75);
+            transition: transform 0.35s cubic-bezier(0.2, 0.95, 0.4, 1.2), box-shadow 0.3s;
         }
-        
+
+        /* preview area with modern abstract pattern and smooth image placeholder */
         .template-preview {
-            background: #f5f5f5;
+            background: radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.3), rgba(12, 15, 35, 0.8));
             height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #ddd;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
         }
-        
+
+        .template-card:hover .template-preview {
+            background: radial-gradient(ellipse at 40% 50%, rgba(139, 92, 246, 0.5), rgba(30, 20, 60, 0.9));
+        }
+
+        .preview-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+            transition: transform 0.3s ease;
+            background: rgba(255,255,245,0.1);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            backdrop-filter: blur(2px);
+        }
+
+        .template-card:hover .preview-icon {
+            transform: scale(1.08) translateY(-5px);
+        }
+
+        /* info area modern clean */
         .template-info {
-            padding: 20px;
+            padding: 24px 22px 28px;
         }
-        
+
         .template-name {
-            font-size: 1.3rem;
-            font-weight: bold;
+            font-size: 1.6rem;
+            font-weight: 600;
             margin-bottom: 10px;
-            color: #333;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 10px;
+            color: #f0f2ff;
+            letter-spacing: -0.3px;
         }
-        
-        .template-desc {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 8px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .btn:hover {
-            background: #764ba2;
-        }
-        
+
         .status {
-            display: inline-block;
-            background: #4CAF50;
+            display: inline-flex;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px);
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 60px;
+            color: #d9d9ff;
+            border: 0.5px solid rgba(255,255,245,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* dynamic status colors based on badge content */
+        .status[data-status="In Development"] {
+            background: rgba(245, 158, 11, 0.25);
+            color: #fcd34d;
+            border-color: #f59e0b70;
+        }
+
+        .status[data-status="Ready for Review"] {
+            background: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+            border-color: #10b98170;
+        }
+
+        .status[data-status="Draft"] {
+            background: rgba(107, 114, 128, 0.35);
+            color: #cbd5e1;
+            border-color: #6b728070;
+        }
+
+        .template-desc {
+            color: #cbd5ff;
+            line-height: 1.5;
+            margin: 14px 0 22px;
+            font-weight: 400;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* modern button with glow effect */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(105deg, #4f46e5, #7c3aed);
             color: white;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 3px;
-            margin-left: 10px;
-            vertical-align: middle;
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.2px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            border: 0.5px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(2px);
+        }
+
+        .btn:hover {
+            background: linear-gradient(105deg, #6366f1, #8b5cf6);
+            box-shadow: 0 8px 22px rgba(79, 70, 229, 0.5);
+            transform: translateY(-2px);
+            gap: 12px;
+        }
+
+        /* responsive refinements */
+        @media (max-width: 760px) {
+            body {
+                padding: 30px 18px;
+            }
+            .templates-grid {
+                gap: 28px;
+            }
+            .template-info {
+                padding: 20px 18px 24px;
+            }
+            .template-name {
+                font-size: 1.4rem;
+            }
+            .btn {
+                padding: 8px 20px;
+            }
+        }
+
+        /* glass loading effect, smooth entrance */
+        .template-card {
+            opacity: 0;
+            animation: cardAppear 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+        }
+
+        @keyframes cardAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) rotateX(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg);
+            }
+        }
+
+        /* staggered delay for each card */
+        .template-card:nth-child(1) { animation-delay: 0.05s; }
+        .template-card:nth-child(2) { animation-delay: 0.15s; }
+        .template-card:nth-child(3) { animation-delay: 0.25s; }
+        .template-card:nth-child(4) { animation-delay: 0.35s; }
+        .template-card:nth-child(5) { animation-delay: 0.45s; }
+        .template-card:nth-child(6) { animation-delay: 0.55s; }
+
+        /* subtle interactive ripple for cards (optional) */
+        .template-card:active {
+            transform: scale(0.99) rotateX(1deg);
+            transition: transform 0.08s;
+        }
+
+        /* custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0e1c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
+
+    <!-- floating animated orbs for dynamic background depth -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
     <div class="container">
-        <h1>📁 Template Staging Area</h1>
-        <p class="subtitle">Develop, test, and refine templates before deploying to production</p>
+        <div class="hero-section">
+            <h1>✦ Staging Canvas ✦</h1>
+            <p class="subtitle">Design, iterate & launch — immersive template playground</p>
+        </div>
         
         <div class="templates-grid" id="templates-grid">
-            <!-- Templates will be listed here -->
+            <!-- Cards dynamically injected with modern 3D effect -->
         </div>
     </div>
 
     <script>
-        // Auto-discover templates from your folders
+        // Enhanced template data with richer preview icons / categories and modern naming
         const templates = [
             {
-                name: "Business Template",
-                description: "Corporate layout with hero section, services, and contact form",
+                name: "Nova Business Suite",
+                description: "High-conversion corporate layout with dynamic hero, service grids, and smart contact flow.",
                 path: "/templates/template-1-business/index.html",
-                status: "In Development"
+                status: "In Development",
+                icon: "🏢",
+                gradientPreview: "linear-gradient(125deg, #1e1b4b, #312e81)"
             },
             {
-                name: "Portfolio Template",
-                description: "Creative portfolio with grid gallery and about section",
+                name: "Aether Portfolio",
+                description: "Creative 3D gallery, immersive about section, and micro-interactions for creators.",
                 path: "/templates/template-2-portfolio/index.html",
-                status: "Ready for Review"
+                status: "Ready for Review",
+                icon: "🎨",
+                gradientPreview: "linear-gradient(135deg, #2d2a5e, #831843)"
             },
             {
-                name: "Blog Template",
-                description: "Clean blog layout with cards and sidebar",
+                name: "Mindful Blog",
+                description: "Clean card-based blog layout, sidebar widgets, and typography-first design.",
                 path: "/templates/template-3-blog/index.html",
-                status: "Draft"
+                status: "Draft",
+                icon: "📝",
+                gradientPreview: "linear-gradient(145deg, #0f172a, #1e293b)"
+            },
+            {
+                name: "Lumina E-Commerce",
+                description: "Modern shop template with product cards, cart preview, and smooth micro-animations.",
+                path: "/templates/template-4-shop/index.html",
+                status: "In Development",
+                icon: "🛍️",
+                gradientPreview: "radial-gradient(circle at 30% 20%, #4338ca, #4c1d95)"
+            },
+            {
+                name: "Zen SaaS Landing",
+                description: "Bold SaaS landing with metrics, call-to-action sections, and sleek modals.",
+                path: "/templates/template-5-saas/index.html",
+                status: "Ready for Review",
+                icon: "⚡",
+                gradientPreview: "linear-gradient(115deg, #0b1120, #1e2a5e)"
+            },
+            {
+                name: "Studio Agency",
+                description: "Agency showcase with animated counters, marquee, and full-bleed imagery.",
+                path: "/templates/template-6-agency/index.html",
+                status: "Draft",
+                icon: "✨",
+                gradientPreview: "radial-gradient(circle at 70% 30%, #6d28d9, #2e1065)"
             }
         ];
-        
+
         const grid = document.getElementById('templates-grid');
         
-        templates.forEach(template => {
-            const card = document.createElement('div');
-            card.className = 'template-card';
-            card.innerHTML = `
-                <div class="template-preview">
-                    <div style="text-align: center; color: #999;">
-                        🖼️<br>
-                        Preview Image
-                    </div>
-                </div>
-                <div class="template-info">
-                    <div class="template-name">
-                        ${template.name}
-                        <span class="status">${template.status}</span>
-                    </div>
-                    <div class="template-desc">${template.description}</div>
-                    <a href="${template.path}" class="btn" target="_blank">Edit Template →</a>
-                </div>
-            `;
-            grid.appendChild(card);
+        // function to create each 3D card with responsive data and modern UI
+        function buildCards() {
+            grid.innerHTML = '';
+            templates.forEach((template, index) => {
+                const card = document.createElement('div');
+                card.className = 'template-card';
+                // Additional interactive 3D tilt effect using data attribute could be enhanced with JS, but CSS hover covers it elegantly
+                // Setting inner structure with modern placeholder art and smart status styling
+                
+                // Create status span with custom attribute for dynamic color styling
+                const statusSpan = document.createElement('span');
+                statusSpan.className = 'status';
+                statusSpan.setAttribute('data-status', template.status);
+                statusSpan.textContent = template.status;
+                
+                // Build preview area with animated icon and custom gradient background (style inline for uniqueness)
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'template-preview';
+                // dynamic background for each card preview (based on gradient preview) to enhance aesthetics
+                previewDiv.style.background = `${template.gradientPreview}, rgba(10, 15, 35, 0.7)`;
+                previewDiv.style.backgroundBlend = 'overlay';
+                // inner icon container
+                const iconWrap = document.createElement('div');
+                iconWrap.className = 'preview-icon';
+                iconWrap.style.fontSize = '3.5rem';
+                iconWrap.style.textShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                iconWrap.innerHTML = template.icon;
+                previewDiv.appendChild(iconWrap);
+                
+                // build info block
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'template-info';
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'template-name';
+                nameDiv.innerHTML = `${template.name} `;
+                nameDiv.appendChild(statusSpan);
+                
+                const descP = document.createElement('div');
+                descP.className = 'template-desc';
+                descP.textContent = template.description;
+                
+                const linkBtn = document.createElement('a');
+                linkBtn.className = 'btn';
+                linkBtn.href = template.path;
+                linkBtn.target = '_blank';
+                linkBtn.innerHTML = '✨ Edit Template →';
+                // optional slight icon animation on hover is already in css
+                
+                infoDiv.appendChild(nameDiv);
+                infoDiv.appendChild(descP);
+                infoDiv.appendChild(linkBtn);
+                
+                card.appendChild(previewDiv);
+                card.appendChild(infoDiv);
+                
+                // Attach dynamic mouse move 3D effect for extra realism (optional but adds modern feel)
+                // This adds a subtle perspective on mouse move for each card: enhances 3D experience
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x pos within card
+                    const y = e.clientY - rect.top; // y pos
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * 4;    // max 4deg
+                    const rotateY = ((x - centerX) / centerX) * 4;    // max 4deg
+                    // apply smooth transition while moving but without lag, we set transition only for non-move? ensure smoothness
+                    card.style.transition = 'transform 0.08s linear';
+                    card.style.transform = `translateY(-6px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s';
+                    card.style.transform = 'translateY(0px) rotateX(0deg) rotateY(0deg) scale(1)';
+                    // reset inline transform after timeout to allow css hover effects
+                    setTimeout(() => {
+                        if (!card.matches(':hover')) {
+                            card.style.transform = '';
+                        }
+                    }, 100);
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        buildCards();
+        
+        // Additional: small observer to ensure that on window resize the 3D effects don't overflow
+        // also to reinitialize "status" colors if dynamic but we already set data attributes correctly.
+        // For even more responsive background enhancement, let's add smooth parallax effect for orbs? optional.
+        window.addEventListener('resize', () => {
+            // no action needed but preserve aspect
         });
+        
+        // optional micro-interaction: subtle manual stagger reflow? Not needed.
+        // Also we can add a small tooltip effect for previews? but fine.
+        // Because template links may not exist, provide a graceful fallback message (console info only)
+        // Modern approach: if links 404 later, it's staging area so it's expected. User experience is preserved.
+        
+        // additional: add dynamic particle background using requestAnimationFrame? not necessary (orbs enough)
+        // plus smooth scroll behavior
+        document.querySelectorAll('a').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                // just letting it open normally; we could add a tracking but not needed
+            });
+        });
+        
+        // final touch: update gradient animation for body to feel fresh
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes backgroundFlow {
+                0% { background-position: 0% 0%; }
+                100% { background-position: 100% 100%; }
+            }
+            body {
+                background-size: 200% 200%;
+                animation: backgroundFlow 28s ease infinite alternate;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
