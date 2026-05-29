@@ -1,550 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Staging Canvas | 3D Template Showcase</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* animated background: deep flowing gradient with moving particles via pseudo-elements */
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Poppins', sans-serif;
-            min-height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #0a0f2a, #030617);
-            position: relative;
-            overflow-x: hidden;
-            padding: 50px 24px;
-        }
-
-        /* animated wave / grain overlay for extra depth */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 40% 60%, rgba(120, 80, 200, 0.15), transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-            animation: subtleShift 14s infinite alternate ease-in-out;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 2px, transparent 2px, transparent 8px);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes subtleShift {
-            0% { opacity: 0.4; transform: scale(1) translate(0, 0); }
-            100% { opacity: 0.8; transform: scale(1.2) translate(3%, 2%); }
-        }
-
-        /* floating orbs / animated background elements */
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.35;
-            z-index: 0;
-            pointer-events: none;
-            animation: floatOrb 18s infinite alternate;
-        }
-
-        .orb-1 {
-            width: 50vw;
-            height: 50vw;
-            background: #4f46e5;
-            top: -20vh;
-            left: -20vw;
-            animation-duration: 22s;
-        }
-
-        .orb-2 {
-            width: 60vw;
-            height: 60vw;
-            background: #ec4899;
-            bottom: -30vh;
-            right: -30vw;
-            animation-duration: 26s;
-            animation-delay: -5s;
-        }
-
-        .orb-3 {
-            width: 40vw;
-            height: 40vw;
-            background: #06b6d4;
-            top: 40%;
-            left: 60%;
-            animation-duration: 19s;
-            filter: blur(90px);
-            opacity: 0.25;
-        }
-
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(5%, 8%) scale(1.2); }
-        }
-
-        /* container with relative stacking */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* modern typography + glassmorphism header */
-        .hero-section {
-            text-align: center;
-            margin-bottom: 60px;
-            backdrop-filter: blur(4px);
-        }
-
-        h1 {
-            font-size: clamp(2.2rem, 7vw, 3.8rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, #FFFFFF, #c0b9ff, #a78bfa);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.02em;
-            margin-bottom: 16px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .subtitle {
-            font-size: clamp(1rem, 4vw, 1.25rem);
-            color: rgba(245, 240, 255, 0.85);
-            font-weight: 400;
-            backdrop-filter: blur(5px);
-            display: inline-block;
-            padding: 0 20px;
-            border-radius: 40px;
-            background: rgba(255,255,255,0.05);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        /* 3D card grid - responsive, modern, perspective */
-        .templates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 40px 32px;
-            perspective: 1200px;
-        }
-
-        /* 3D card container with smooth transition + hover lift + rotation */
-        .template-card {
-            background: rgba(18, 22, 45, 0.65);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 25px 40px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-            transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.4s ease, border-color 0.2s;
-            transform-style: preserve-3d;
-            transform: translateZ(0) rotateX(0deg) rotateY(0deg);
-            cursor: pointer;
-        }
-
-        /* sophisticated 3D tilt effect & scaling */
-        .template-card:hover {
-            transform: translateY(-12px) rotateX(3deg) rotateY(5deg) scale(1.02);
-            box-shadow: 0 35px 45px -18px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,240,0.25) inset;
-            border-color: rgba(167, 139, 250, 0.6);
-            background: rgba(25, 30, 55, 0.75);
-            transition: transform 0.35s cubic-bezier(0.2, 0.95, 0.4, 1.2), box-shadow 0.3s;
-        }
-
-        /* preview area with modern abstract pattern and smooth image placeholder */
-        .template-preview {
-            background: radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.3), rgba(12, 15, 35, 0.8));
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s;
-        }
-
-        .template-card:hover .template-preview {
-            background: radial-gradient(ellipse at 40% 50%, rgba(139, 92, 246, 0.5), rgba(30, 20, 60, 0.9));
-        }
-
-        .preview-icon {
-            font-size: 4rem;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
-            transition: transform 0.3s ease;
-            background: rgba(255,255,245,0.1);
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 30px;
-            backdrop-filter: blur(2px);
-        }
-
-        .template-card:hover .preview-icon {
-            transform: scale(1.08) translateY(-5px);
-        }
-
-        /* info area modern clean */
-        .template-info {
-            padding: 24px 22px 28px;
-        }
-
-        .template-name {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 10px;
-            color: #f0f2ff;
-            letter-spacing: -0.3px;
-        }
-
-        .status {
-            display: inline-flex;
-            background: rgba(0,0,0,0.35);
-            backdrop-filter: blur(4px);
-            font-size: 0.7rem;
-            font-weight: 500;
-            padding: 4px 12px;
-            border-radius: 60px;
-            color: #d9d9ff;
-            border: 0.5px solid rgba(255,255,245,0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* dynamic status colors based on badge content */
-        .status[data-status="In Development"] {
-            background: rgba(245, 158, 11, 0.25);
-            color: #fcd34d;
-            border-color: #f59e0b70;
-        }
-
-        .status[data-status="Ready for Review"] {
-            background: rgba(16, 185, 129, 0.25);
-            color: #6ee7b7;
-            border-color: #10b98170;
-        }
-
-        .status[data-status="Draft"] {
-            background: rgba(107, 114, 128, 0.35);
-            color: #cbd5e1;
-            border-color: #6b728070;
-        }
-
-        .template-desc {
-            color: #cbd5ff;
-            line-height: 1.5;
-            margin: 14px 0 22px;
-            font-weight: 400;
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        /* modern button with glow effect */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(105deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 10px 24px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            letter-spacing: 0.2px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
-            border: 0.5px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(2px);
-        }
-
-        .btn:hover {
-            background: linear-gradient(105deg, #6366f1, #8b5cf6);
-            box-shadow: 0 8px 22px rgba(79, 70, 229, 0.5);
-            transform: translateY(-2px);
-            gap: 12px;
-        }
-
-        /* responsive refinements */
-        @media (max-width: 760px) {
-            body {
-                padding: 30px 18px;
-            }
-            .templates-grid {
-                gap: 28px;
-            }
-            .template-info {
-                padding: 20px 18px 24px;
-            }
-            .template-name {
-                font-size: 1.4rem;
-            }
-            .btn {
-                padding: 8px 20px;
-            }
-        }
-
-        /* glass loading effect, smooth entrance */
-        .template-card {
-            opacity: 0;
-            animation: cardAppear 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
-        }
-
-        @keyframes cardAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(40px) rotateX(5deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) rotateX(0deg);
-            }
-        }
-
-        /* staggered delay for each card */
-        .template-card:nth-child(1) { animation-delay: 0.05s; }
-        .template-card:nth-child(2) { animation-delay: 0.15s; }
-        .template-card:nth-child(3) { animation-delay: 0.25s; }
-        .template-card:nth-child(4) { animation-delay: 0.35s; }
-        .template-card:nth-child(5) { animation-delay: 0.45s; }
-        .template-card:nth-child(6) { animation-delay: 0.55s; }
-
-        /* subtle interactive ripple for cards (optional) */
-        .template-card:active {
-            transform: scale(0.99) rotateX(1deg);
-            transition: transform 0.08s;
-        }
-
-        /* custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0e1c;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4f46e5;
-            border-radius: 12px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TemplateForge — Premium Templates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --c-bg: #05060f;
+    --c-surface: #0d0f1f;
+    --c-surface2: #13162b;
+    --c-border: rgba(255,255,255,0.07);
+    --c-border2: rgba(255,255,255,0.14);
+    --c-accent: #7c5cfc;
+    --c-accent2: #e040fb;
+    --c-text: #f0efff;
+    --c-muted: rgba(240,239,255,0.5);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--c-bg);
+    color:var(--c-text);
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  /* Animated mesh bg */
+  body::before{
+    content:'';
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 80vw 60vh at 10% 0%,rgba(124,92,252,0.18) 0%,transparent 70%),
+      radial-gradient(ellipse 60vw 50vh at 90% 80%,rgba(224,64,251,0.14) 0%,transparent 70%),
+      radial-gradient(ellipse 50vw 40vh at 50% 40%,rgba(29,158,255,0.07) 0%,transparent 70%);
+    animation:meshPulse 12s ease-in-out infinite alternate;
+  }
+  @keyframes meshPulse{
+    0%{opacity:.6}
+    100%{opacity:1;filter:hue-rotate(20deg)}
+  }
+  /* Noise overlay */
+  body::after{
+    content:'';
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.025;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Typography */
+  .font-display{font-family:'Syne',sans-serif}
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:#05060f}
+  ::-webkit-scrollbar-thumb{background:#7c5cfc;border-radius:3px}
+  /* Glass card */
+  .glass{
+    background:rgba(13,15,31,0.7);
+    backdrop-filter:blur(16px);
+    border:1px solid var(--c-border);
+  }
+  .glass-strong{
+    background:rgba(19,22,43,0.88);
+    backdrop-filter:blur(24px);
+    border:1px solid var(--c-border2);
+  }
+  /* Gradient text */
+  .grad-text{
+    background:linear-gradient(135deg,#fff 0%,#c4b5fd 40%,#e040fb 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .grad-text-sm{
+    background:linear-gradient(135deg,#a78bfa,#e879f9);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  /* Buttons */
+  .btn-primary{
+    background:linear-gradient(135deg,#7c5cfc,#c026d3);
+    color:#fff;border:none;cursor:pointer;
+    transition:all .2s;font-family:'DM Sans',sans-serif;
+  }
+  .btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,92,252,.4)}
+  .btn-ghost{
+    background:transparent;border:1px solid var(--c-border2);color:var(--c-text);cursor:pointer;
+    transition:all .2s;font-family:'DM Sans',sans-serif;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(124,92,252,.5)}
+  /* Card 3D tilt */
+  .template-card{
+    transition:transform .4s cubic-bezier(.2,.9,.4,1.1),box-shadow .3s;
+    transform-style:preserve-3d;
+    will-change:transform;
+  }
+  .template-card:hover{box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 0 1px rgba(124,92,252,.3)}
+  /* Stars */
+  .star{color:#f59e0b}
+  .star-empty{color:rgba(255,255,255,.2)}
+  /* Filter pill */
+  .filter-pill{
+    cursor:pointer;transition:all .2s;
+    border:1px solid var(--c-border2);
+    background:rgba(255,255,255,.04);
+    color:var(--c-muted);
+    font-family:'DM Sans',sans-serif;
+  }
+  .filter-pill.active,.filter-pill:hover{
+    background:rgba(124,92,252,.2);
+    border-color:rgba(124,92,252,.6);
+    color:#c4b5fd;
+  }
+  /* Badge */
+  .badge-bestseller{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
+  .badge-new{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff}
+  .badge-popular{background:linear-gradient(135deg,#7c5cfc,#c026d3);color:#fff}
+  .badge-trending{background:linear-gradient(135deg,#ec4899,#f97316);color:#fff}
+  /* Cart drawer */
+  #cart-drawer{
+    position:fixed;top:0;right:-420px;width:420px;max-width:100vw;height:100vh;
+    z-index:1000;transition:right .35s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;
+  }
+  #cart-drawer.open{right:0}
+  #cart-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  #cart-overlay.show{opacity:1;pointer-events:all}
+  /* Modal */
+  #preview-modal{
+    position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  #preview-modal.show{opacity:1;pointer-events:all}
+  #preview-modal .modal-box{
+    transform:scale(.95) translateY(20px);transition:transform .3s cubic-bezier(.2,.9,.4,1.1);
+  }
+  #preview-modal.show .modal-box{transform:scale(1) translateY(0)}
+  /* Toast */
+  #toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px}
+  .toast{
+    background:rgba(19,22,43,.98);border:1px solid rgba(124,92,252,.5);
+    color:var(--c-text);padding:12px 18px;border-radius:12px;
+    font-size:14px;font-family:'DM Sans',sans-serif;
+    animation:toastIn .3s ease,toastOut .3s ease 2.5s forwards;
+    min-width:240px;display:flex;align-items:center;gap:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  @keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(30px)}}
+  /* Card entrance */
+  .card-enter{
+    opacity:0;animation:cardAppear .55s cubic-bezier(.2,.9,.3,1.1) forwards;
+  }
+  @keyframes cardAppear{
+    0%{opacity:0;transform:translateY(30px) scale(.96)}
+    100%{opacity:1;transform:translateY(0) scale(1)}
+  }
+  /* Search */
+  #search-input{
+    background:rgba(13,15,31,.8);border:1px solid var(--c-border2);
+    color:var(--c-text);outline:none;font-family:'DM Sans',sans-serif;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  #search-input:focus{border-color:rgba(124,92,252,.6);box-shadow:0 0 0 3px rgba(124,92,252,.15)}
+  #search-input::placeholder{color:var(--c-muted)}
+  /* Sort select */
+  #sort-select{
+    background:rgba(13,15,31,.8);border:1px solid var(--c-border2);
+    color:var(--c-text);outline:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+    -webkit-appearance:none;appearance:none;
+  }
+  #sort-select option{background:#13162b}
+  /* Hero badge */
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(124,92,252,.15);border:1px solid rgba(124,92,252,.3);
+    border-radius:999px;padding:5px 14px;font-size:13px;
+    color:#c4b5fd;font-family:'DM Sans',sans-serif;
+    animation:fadeDown .6s ease .1s both;
+  }
+  .hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#7c5cfc;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .hero-h1{animation:fadeUp .7s ease .25s both}
+  .hero-sub{animation:fadeUp .7s ease .4s both}
+  .hero-actions{animation:fadeUp .7s ease .55s both}
+  .hero-stats{animation:fadeUp .7s ease .7s both}
+  /* Floating shapes */
+  .shape{position:absolute;border-radius:50%;pointer-events:none;opacity:.6;filter:blur(1px)}
+  /* Cart item */
+  .cart-item-img{
+    width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;flex-shrink:0;
+  }
+  /* Responsive */
+  @media(max-width:640px){
+    #cart-drawer{width:100vw}
+    .hero-section{padding:40px 16px 60px}
+  }
+</style>
 </head>
 <body>
 
-    <!-- floating animated orbs for dynamic background depth -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+<!-- Animated background shapes -->
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden">
+  <div class="shape" style="width:400px;height:400px;background:rgba(124,92,252,.06);top:-100px;right:-80px;animation:floatA 20s ease-in-out infinite alternate"></div>
+  <div class="shape" style="width:300px;height:300px;background:rgba(224,64,251,.06);bottom:5%;left:-60px;animation:floatB 18s ease-in-out infinite alternate"></div>
+  <div class="shape" style="width:200px;height:200px;background:rgba(29,158,255,.05);top:50%;left:60%;animation:floatA 14s ease-in-out infinite alternate-reverse"></div>
+</div>
+<style>
+@keyframes floatA{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(30px,20px) rotate(8deg)}}
+@keyframes floatB{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(-20px,30px) rotate(-6deg)}}
+</style>
 
-    <div class="container">
-        <div class="hero-section">
-            <h1>✦ Staging Canvas ✦</h1>
-            <p class="subtitle">Design, iterate & launch — immersive template playground</p>
-        </div>
-        
-        <div class="templates-grid" id="templates-grid">
-            <!-- Cards dynamically injected with modern 3D effect -->
-        </div>
+<!-- Navbar -->
+<nav class="glass-strong sticky top-0 z-50 border-b" style="border-color:var(--c-border)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+    <div class="flex items-center gap-2">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#7c5cfc,#e040fb);border-radius:7px;display:flex;align-items:center;justify-content:center">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M4 5h16M4 12h10M4 19h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="font-display font-800 text-lg" style="letter-spacing:-.5px">TemplateForge</span>
     </div>
+    <div class="flex items-center gap-3">
+      <button class="btn-ghost rounded-xl px-4 py-2 text-sm" style="font-size:13px">Sign In</button>
+      <button onclick="openCart()" id="cart-btn" class="btn-primary rounded-xl px-4 py-2 text-sm flex items-center gap-2" style="position:relative">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Cart
+        <span id="cart-badge" style="display:none;position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;color:#fff">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
 
-    <script>
-        // Enhanced template data with richer preview icons / categories and modern naming
-        const templates = [
-            {
-                name: "Nova Business Suite",
-                description: "High-conversion corporate layout with dynamic hero, service grids, and smart contact flow.",
-                path: "/templates/template-1-business/index.html",
-                status: "In Development",
-                icon: "🏢",
-                gradientPreview: "linear-gradient(125deg, #1e1b4b, #312e81)"
-            },
-            {
-                name: "Aether Portfolio",
-                description: "Creative 3D gallery, immersive about section, and micro-interactions for creators.",
-                path: "/templates/template-2-portfolio/index.html",
-                status: "Ready for Review",
-                icon: "🎨",
-                gradientPreview: "linear-gradient(135deg, #2d2a5e, #831843)"
-            },
-            {
-                name: "Mindful Blog",
-                description: "Clean card-based blog layout, sidebar widgets, and typography-first design.",
-                path: "/templates/template-3-blog/index.html",
-                status: "Draft",
-                icon: "📝",
-                gradientPreview: "linear-gradient(145deg, #0f172a, #1e293b)"
-            },
-            {
-                name: "Lumina E-Commerce",
-                description: "Modern shop template with product cards, cart preview, and smooth micro-animations.",
-                path: "/templates/template-4-shop/index.html",
-                status: "In Development",
-                icon: "🛍️",
-                gradientPreview: "radial-gradient(circle at 30% 20%, #4338ca, #4c1d95)"
-            },
-            {
-                name: "Zen SaaS Landing",
-                description: "Bold SaaS landing with metrics, call-to-action sections, and sleek modals.",
-                path: "/templates/template-5-saas/index.html",
-                status: "Ready for Review",
-                icon: "⚡",
-                gradientPreview: "linear-gradient(115deg, #0b1120, #1e2a5e)"
-            },
-            {
-                name: "Studio Agency",
-                description: "Agency showcase with animated counters, marquee, and full-bleed imagery.",
-                path: "/templates/template-6-agency/index.html",
-                status: "Draft",
-                icon: "✨",
-                gradientPreview: "radial-gradient(circle at 70% 30%, #6d28d9, #2e1065)"
-            }
-        ];
+<!-- Toast container -->
+<div id="toast-container"></div>
 
-        const grid = document.getElementById('templates-grid');
-        
-        // function to create each 3D card with responsive data and modern UI
-        function buildCards() {
-            grid.innerHTML = '';
-            templates.forEach((template, index) => {
-                const card = document.createElement('div');
-                card.className = 'template-card';
-                // Additional interactive 3D tilt effect using data attribute could be enhanced with JS, but CSS hover covers it elegantly
-                // Setting inner structure with modern placeholder art and smart status styling
-                
-                // Create status span with custom attribute for dynamic color styling
-                const statusSpan = document.createElement('span');
-                statusSpan.className = 'status';
-                statusSpan.setAttribute('data-status', template.status);
-                statusSpan.textContent = template.status;
-                
-                // Build preview area with animated icon and custom gradient background (style inline for uniqueness)
-                const previewDiv = document.createElement('div');
-                previewDiv.className = 'template-preview';
-                // dynamic background for each card preview (based on gradient preview) to enhance aesthetics
-                previewDiv.style.background = `${template.gradientPreview}, rgba(10, 15, 35, 0.7)`;
-                previewDiv.style.backgroundBlend = 'overlay';
-                // inner icon container
-                const iconWrap = document.createElement('div');
-                iconWrap.className = 'preview-icon';
-                iconWrap.style.fontSize = '3.5rem';
-                iconWrap.style.textShadow = '0 4px 12px rgba(0,0,0,0.3)';
-                iconWrap.innerHTML = template.icon;
-                previewDiv.appendChild(iconWrap);
-                
-                // build info block
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'template-info';
-                
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'template-name';
-                nameDiv.innerHTML = `${template.name} `;
-                nameDiv.appendChild(statusSpan);
-                
-                const descP = document.createElement('div');
-                descP.className = 'template-desc';
-                descP.textContent = template.description;
-                
-                const linkBtn = document.createElement('a');
-                linkBtn.className = 'btn';
-                linkBtn.href = template.path;
-                linkBtn.target = '_blank';
-                linkBtn.innerHTML = '✨ Edit Template →';
-                // optional slight icon animation on hover is already in css
-                
-                infoDiv.appendChild(nameDiv);
-                infoDiv.appendChild(descP);
-                infoDiv.appendChild(linkBtn);
-                
-                card.appendChild(previewDiv);
-                card.appendChild(infoDiv);
-                
-                // Attach dynamic mouse move 3D effect for extra realism (optional but adds modern feel)
-                // This adds a subtle perspective on mouse move for each card: enhances 3D experience
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left; // x pos within card
-                    const y = e.clientY - rect.top; // y pos
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * 4;    // max 4deg
-                    const rotateY = ((x - centerX) / centerX) * 4;    // max 4deg
-                    // apply smooth transition while moving but without lag, we set transition only for non-move? ensure smoothness
-                    card.style.transition = 'transform 0.08s linear';
-                    card.style.transform = `translateY(-6px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s';
-                    card.style.transform = 'translateY(0px) rotateX(0deg) rotateY(0deg) scale(1)';
-                    // reset inline transform after timeout to allow css hover effects
-                    setTimeout(() => {
-                        if (!card.matches(':hover')) {
-                            card.style.transform = '';
-                        }
-                    }, 100);
-                });
-                
-                grid.appendChild(card);
-            });
-        }
-        
-        buildCards();
-        
-        // Additional: small observer to ensure that on window resize the 3D effects don't overflow
-        // also to reinitialize "status" colors if dynamic but we already set data attributes correctly.
-        // For even more responsive background enhancement, let's add smooth parallax effect for orbs? optional.
-        window.addEventListener('resize', () => {
-            // no action needed but preserve aspect
-        });
-        
-        // optional micro-interaction: subtle manual stagger reflow? Not needed.
-        // Also we can add a small tooltip effect for previews? but fine.
-        // Because template links may not exist, provide a graceful fallback message (console info only)
-        // Modern approach: if links 404 later, it's staging area so it's expected. User experience is preserved.
-        
-        // additional: add dynamic particle background using requestAnimationFrame? not necessary (orbs enough)
-        // plus smooth scroll behavior
-        document.querySelectorAll('a').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                // just letting it open normally; we could add a tracking but not needed
-            });
-        });
-        
-        // final touch: update gradient animation for body to feel fresh
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes backgroundFlow {
-                0% { background-position: 0% 0%; }
-                100% { background-position: 100% 100%; }
-            }
-            body {
-                background-size: 200% 200%;
-                animation: backgroundFlow 28s ease infinite alternate;
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+<!-- Cart overlay -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+
+<!-- Cart Drawer -->
+<div id="cart-drawer" class="glass-strong">
+  <div class="flex items-center justify-between p-5 border-b" style="border-color:var(--c-border)">
+    <div>
+      <div class="font-display font-700 text-lg">Your Cart</div>
+      <div style="font-size:12px;color:var(--c-muted)" id="cart-count-text">0 items</div>
+    </div>
+    <button onclick="closeCart()" class="btn-ghost rounded-lg p-2">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="cart-items" class="flex-1 overflow-y-auto p-4" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div class="p-5 border-t" style="border-color:var(--c-border)">
+    <div id="cart-empty-msg" class="text-center py-6" style="color:var(--c-muted);font-size:14px">
+      <div style="font-size:2.5rem;margin-bottom:8px">🛒</div>
+      Your cart is empty
+    </div>
+    <div id="cart-footer" style="display:none">
+      <div class="flex items-center justify-between mb-4">
+        <span style="color:var(--c-muted);font-size:14px">Subtotal</span>
+        <span class="font-display font-700 text-xl grad-text-sm" id="cart-total">$0</span>
+      </div>
+      <button onclick="handleCheckout()" class="btn-primary w-full py-3 rounded-2xl font-display font-700 text-base" style="width:100%">
+        Checkout — <span id="cart-total-btn">$0</span>
+      </button>
+      <button onclick="clearCart()" class="btn-ghost w-full py-2 rounded-xl text-sm mt-2" style="width:100%;font-size:13px;color:var(--c-muted)">Clear Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="preview-modal" onclick="handleModalClick(event)">
+  <div class="modal-box glass-strong rounded-3xl w-full max-w-xl mx-4 overflow-hidden" style="max-height:90vh;overflow-y:auto">
+    <div id="modal-preview-area" style="height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden"></div>
+    <div class="p-6">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <div id="modal-name" class="font-display font-700 text-2xl"></div>
+          <div id="modal-category" style="font-size:13px;color:var(--c-muted);margin-top:2px"></div>
+        </div>
+        <div id="modal-badge-wrap"></div>
+      </div>
+      <div id="modal-desc" style="color:rgba(240,239,255,.7);font-size:15px;line-height:1.6;margin-bottom:20px"></div>
+      <div class="flex items-center gap-4 mb-5">
+        <div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:2px">Price</div>
+          <div id="modal-price" class="font-display font-700 text-2xl grad-text-sm"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:2px">Rating</div>
+          <div id="modal-stars" class="flex items-center gap-1"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:2px">Reviews</div>
+          <div id="modal-reviews" style="font-size:14px;font-weight:500"></div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button id="modal-buy-btn" onclick="modalBuy()" class="btn-primary flex-1 py-3 rounded-2xl font-display font-700 text-base">Add to Cart</button>
+        <button onclick="closeModal()" class="btn-ghost px-6 py-3 rounded-2xl text-sm">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div style="position:relative;z-index:1">
+
+<!-- Hero Section -->
+<section class="hero-section max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20">
+  <div class="text-center">
+    <div class="hero-badge mb-5">
+      <div class="hero-badge-dot"></div>
+      Premium Design System · 200+ Components
+    </div>
+    <h1 class="hero-h1 font-display grad-text mb-5" style="font-size:clamp(2.5rem,7vw,5.5rem);line-height:1.08;letter-spacing:-.03em;font-weight:800">
+      Build Faster.<br>Launch Smarter.
+    </h1>
+    <p class="hero-sub max-w-lg mx-auto mb-8" style="color:rgba(240,239,255,.65);font-size:clamp(1rem,2.5vw,1.2rem);line-height:1.6">
+      Premium HTML templates engineered for performance. Pick your template, customize, ship.
+    </p>
+    <div class="hero-actions flex items-center justify-center gap-3 flex-wrap">
+      <button class="btn-primary px-7 py-3.5 rounded-2xl font-display font-700 text-base" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Browse Templates</button>
+      <button class="btn-ghost px-7 py-3.5 rounded-2xl font-display font-700 text-base">View Demo</button>
+    </div>
+    <div class="hero-stats flex items-center justify-center gap-8 mt-12 flex-wrap" style="padding-bottom:4px">
+      <div class="text-center">
+        <div class="font-display font-800 text-2xl grad-text-sm">2,400+</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px">Happy Customers</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--c-border2)"></div>
+      <div class="text-center">
+        <div class="font-display font-800 text-2xl grad-text-sm">4.9★</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px">Average Rating</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--c-border2)"></div>
+      <div class="text-center">
+        <div class="font-display font-800 text-2xl grad-text-sm">60+</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px">Templates Ready</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--c-border2)"></div>
+      <div class="text-center">
+        <div class="font-display font-800 text-2xl grad-text-sm">Free</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px">Updates Forever</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery" class="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+
+  <!-- Controls bar -->
+  <div class="glass rounded-2xl p-4 mb-8" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+    <!-- Search -->
+    <div style="position:relative;flex:1;min-width:200px">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.5"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="search-input" type="text" placeholder="Search templates…" oninput="applyFilters()"
+        style="width:100%;padding:10px 14px 10px 38px;border-radius:12px;font-size:14px">
+    </div>
+    <!-- Sort -->
+    <div style="position:relative">
+      <select id="sort-select" onchange="applyFilters()" style="padding:10px 36px 10px 14px;border-radius:12px;font-size:13px;cursor:pointer">
+        <option value="popular">Most Popular</option>
+        <option value="newest">Newest</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.5"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <!-- Filter pills -->
+  <div id="filter-pills" class="flex flex-wrap gap-2 mb-8">
+    <!-- Rendered by JS -->
+  </div>
+
+  <!-- Results info -->
+  <div class="flex items-center justify-between mb-6">
+    <span id="results-count" style="font-size:13px;color:var(--c-muted)"></span>
+  </div>
+
+  <!-- Grid -->
+  <div id="templates-grid" class="grid gap-6" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))"></div>
+  <div id="no-results" style="display:none;text-align:center;padding:60px 20px">
+    <div style="font-size:3rem;margin-bottom:12px">🔍</div>
+    <div class="font-display font-700 text-xl mb-2">No templates found</div>
+    <div style="color:var(--c-muted);font-size:14px">Try a different search or category</div>
+  </div>
+
+</section>
+</div>
+
+<script>
+const templates=[
+  {id:1,name:"Nova Business",desc:"High-conversion corporate layout with hero, service grids, testimonials, and contact flow. Perfect for agencies and consultancies.",category:"Business",price:49,rating:4.9,reviewCount:312,popular:true,icon:"🏢",badge:"Best Seller",gradient:"linear-gradient(135deg,#1e1b4b,#4f46e5)",year:2024},
+  {id:2,name:"Aether Portfolio",desc:"Immersive creative portfolio with 3D gallery, animated about section, and parallax effects. Built for designers and artists.",category:"Portfolio",price:39,rating:4.8,reviewCount:248,popular:true,icon:"🎨",badge:"Popular",gradient:"linear-gradient(135deg,#2d1b69,#c026d3)",year:2024},
+  {id:3,name:"Lumina Shop",desc:"Modern e-commerce template with product cards, wishlist, animated cart, and seamless checkout flow. Optimized for conversion.",category:"E-commerce",price:79,rating:4.9,reviewCount:189,popular:true,icon:"🛍️",badge:"Best Seller",gradient:"linear-gradient(135deg,#0c4a6e,#7c5cfc)",year:2024},
+  {id:4,name:"Mindful Blog",desc:"Clean typography-first blog with card layout, sidebar widgets, category filtering, and dark mode support.",category:"Blog",price:29,rating:4.7,reviewCount:156,popular:false,icon:"📝",badge:null,gradient:"linear-gradient(135deg,#0f172a,#1e3a5f)",year:2024},
+  {id:5,name:"Zen SaaS",desc:"Bold SaaS landing page with animated metrics, pricing tables, testimonial carousel, and smooth CTA modals.",category:"SaaS",price:69,rating:4.9,reviewCount:421,popular:true,icon:"⚡",badge:"Trending",gradient:"linear-gradient(135deg,#0b1120,#7c3aed)",year:2024},
+  {id:6,name:"Studio Agency",desc:"Cinematic agency site with full-bleed imagery, animated counters, horizontal scrolling work section, and marquee strip.",category:"Agency",price:59,rating:4.8,reviewCount:203,popular:false,icon:"✦",badge:"New",gradient:"linear-gradient(135deg,#2e1065,#be185d)",year:2025},
+  {id:7,name:"Dash Analytics",desc:"Data-rich dashboard template with interactive charts, KPI cards, sidebar navigation, and customizable widget grid.",category:"SaaS",price:89,rating:4.7,reviewCount:134,popular:false,icon:"📊",badge:"New",gradient:"linear-gradient(135deg,#052e16,#0d9488)",year:2025},
+  {id:8,name:"Spark Landing",desc:"Minimal but powerful product launch page with countdown timer, feature grid, video section, and waitlist form.",category:"SaaS",price:44,rating:4.6,reviewCount:97,popular:false,icon:"🚀",badge:null,gradient:"linear-gradient(135deg,#1c1917,#d97706)",year:2025},
+];
+
+const categories=["All","Business","Portfolio","E-commerce","Blog","SaaS","Agency"];
+let activeCategory="All";
+let cart={};
+let currentModalId=null;
+
+function buildFilterPills(){
+  const wrap=document.getElementById('filter-pills');
+  wrap.innerHTML='';
+  categories.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='filter-pill px-4 py-2 rounded-xl text-sm font-display font-600'+(c===activeCategory?' active':'');
+    btn.style.fontWeight='600';
+    btn.textContent=c;
+    btn.onclick=()=>{activeCategory=c;buildFilterPills();applyFilters()};
+    wrap.appendChild(btn);
+  });
+}
+
+function getFiltered(){
+  const q=document.getElementById('search-input').value.trim().toLowerCase();
+  let list=templates.filter(t=>{
+    const catOk=activeCategory==='All'||t.category===activeCategory;
+    const qOk=!q||t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.category.toLowerCase().includes(q);
+    return catOk&&qOk;
+  });
+  const sort=document.getElementById('sort-select').value;
+  if(sort==='price-asc')list.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc')list.sort((a,b)=>b.price-a.price);
+  else if(sort==='rating')list.sort((a,b)=>b.rating-a.rating);
+  else if(sort==='newest')list.sort((a,b)=>b.year-a.year);
+  else list.sort((a,b)=>(b.popular?1:0)-(a.popular?1:0));
+  return list;
+}
+
+function starsHTML(r,small){
+  const sz=small?'12':'13';
+  let h='<span style="display:flex;gap:2px;align-items:center">';
+  for(let i=1;i<=5;i++){
+    h+=`<span style="font-size:${sz}px;color:${i<=Math.round(r)?'#f59e0b':'rgba(255,255,255,.2)'}">${i<=Math.round(r)?'★':'★'}</span>`;
+  }
+  return h+'</span>';
+}
+
+function badgeHTML(badge){
+  if(!badge)return'';
+  const map={'Best Seller':'badge-bestseller','New':'badge-new','Popular':'badge-popular','Trending':'badge-trending'};
+  return`<span class="${map[badge]||'badge-popular'}" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.4px;text-transform:uppercase">${badge}</span>`;
+}
+
+function applyFilters(){
+  const list=getFiltered();
+  const grid=document.getElementById('templates-grid');
+  const noRes=document.getElementById('no-results');
+  const cnt=document.getElementById('results-count');
+  grid.innerHTML='';
+  if(!list.length){grid.style.display='none';noRes.style.display='block';cnt.textContent='';return;}
+  grid.style.display='grid';noRes.style.display='none';
+  cnt.textContent=`${list.length} template${list.length!==1?'s':''} found`;
+  list.forEach((t,i)=>{
+    const card=document.createElement('div');
+    card.className='template-card glass card-enter rounded-3xl overflow-hidden';
+    card.style.animationDelay=(i*0.07)+'s';
+    card.style.cursor='default';
+    card.innerHTML=`
+      <div style="height:180px;background:${t.gradient};position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
+        <div style="font-size:4rem;filter:drop-shadow(0 4px 16px rgba(0,0,0,.4));transition:transform .3s;user-select:none">${t.icon}</div>
+        <div style="position:absolute;top:12px;right:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+          ${badgeHTML(t.badge)}
+          <span style="background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);font-size:11px;padding:3px 8px;border-radius:999px;color:rgba(255,255,255,.8)">${t.category}</span>
+        </div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,.4))"></div>
+      </div>
+      <div style="padding:20px">
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <div class="font-display font-700 text-lg" style="letter-spacing:-.3px;line-height:1.2">${t.name}</div>
+          <div class="font-display font-800 grad-text-sm" style="font-size:1.3rem;white-space:nowrap">$${t.price}</div>
+        </div>
+        <div class="flex items-center gap-2 mb-3">
+          ${starsHTML(t.rating,true)}
+          <span style="font-size:12px;color:var(--c-muted)">${t.rating} (${t.reviewCount})</span>
+        </div>
+        <p style="font-size:13px;color:rgba(240,239,255,.6);line-height:1.55;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${t.desc}</p>
+        <div style="display:flex;gap:8px">
+          <button onclick="openPreview(${t.id})" class="btn-ghost flex-1 py-2 rounded-xl text-sm" style="font-size:13px">Preview</button>
+          <button onclick="addToCart(${t.id})" class="btn-primary flex-1 py-2 rounded-xl text-sm" style="font-size:13px">Add to Cart</button>
+        </div>
+      </div>
+    `;
+    // 3D tilt
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=e.clientX-r.left,y=e.clientY-r.top;
+      const cx=r.width/2,cy=r.height/2;
+      const rx=((y-cy)/cy)*5,ry=((x-cx)/cx)*5;
+      card.style.transition='transform .08s linear';
+      card.style.transform=`perspective(900px) translateY(-6px) rotateX(${-rx}deg) rotateY(${ry}deg) scale(1.01)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transition='transform .4s cubic-bezier(.2,.9,.4,1.1)';
+      card.style.transform='perspective(900px) translateY(0) rotateX(0) rotateY(0) scale(1)';
+    });
+    grid.appendChild(card);
+  });
+}
+
+function openPreview(id){
+  const t=templates.find(x=>x.id===id);
+  currentModalId=id;
+  document.getElementById('modal-preview-area').style.background=t.gradient;
+  document.getElementById('modal-preview-area').innerHTML=`<div style="font-size:5rem;filter:drop-shadow(0 4px 20px rgba(0,0,0,.5))">${t.icon}</div><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.3))"></div>`;
+  document.getElementById('modal-name').textContent=t.name;
+  document.getElementById('modal-category').textContent=t.category+' Template';
+  document.getElementById('modal-desc').textContent=t.desc;
+  document.getElementById('modal-price').textContent='$'+t.price;
+  document.getElementById('modal-stars').innerHTML=starsHTML(t.rating,false)+'<span style="font-size:13px;color:var(--c-muted);margin-left:6px">'+t.rating+' ('+t.reviewCount+' reviews)</span>';
+  document.getElementById('modal-reviews').textContent=t.reviewCount+' reviews';
+  document.getElementById('modal-badge-wrap').innerHTML=badgeHTML(t.badge);
+  document.getElementById('modal-buy-btn').textContent=cart[id]?'In Cart ✓':'Add to Cart';
+  document.getElementById('preview-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('preview-modal').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function handleModalClick(e){
+  if(e.target===document.getElementById('preview-modal'))closeModal();
+}
+
+function modalBuy(){
+  if(currentModalId)addToCart(currentModalId);
+  closeModal();
+}
+
+function addToCart(id){
+  const t=templates.find(x=>x.id===id);
+  if(cart[id]){
+    showToast('⚠️','Already in cart','That template is already added.');
+    return;
+  }
+  cart[id]=1;
+  updateCartUI();
+  showToast('✓',t.name+' added','Template added to your cart.');
+  if(currentModalId===id)document.getElementById('modal-buy-btn').textContent='In Cart ✓';
+}
+
+function removeFromCart(id){
+  delete cart[id];
+  updateCartUI();
+}
+
+function clearCart(){
+  cart={};
+  updateCartUI();
+}
+
+function updateCartUI(){
+  const ids=Object.keys(cart);
+  const count=ids.length;
+  const badge=document.getElementById('cart-badge');
+  if(count>0){badge.style.display='flex';badge.textContent=count;}
+  else{badge.style.display='none';}
+  document.getElementById('cart-count-text').textContent=count+' item'+(count!==1?'s':'');
+  const total=ids.reduce((s,id)=>{const t=templates.find(x=>x.id==id);return t?s+t.price:s;},0);
+  document.getElementById('cart-total').textContent='$'+total;
+  document.getElementById('cart-total-btn').textContent='$'+total;
+  const emptyMsg=document.getElementById('cart-empty-msg');
+  const footer=document.getElementById('cart-footer');
+  if(count===0){emptyMsg.style.display='block';footer.style.display='none';}
+  else{emptyMsg.style.display='none';footer.style.display='block';}
+  const itemsWrap=document.getElementById('cart-items');
+  itemsWrap.innerHTML='';
+  ids.forEach(id=>{
+    const t=templates.find(x=>x.id==id);
+    if(!t)return;
+    const item=document.createElement('div');
+    item.className='glass rounded-2xl';
+    item.style.cssText='display:flex;align-items:center;gap:12px;padding:12px 14px';
+    item.innerHTML=`
+      <div class="cart-item-img" style="background:${t.gradient}">${t.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name}</div>
+        <div style="font-size:12px;color:var(--c-muted)">${t.category}</div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;background:linear-gradient(135deg,#a78bfa,#e879f9);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap">$${t.price}</div>
+      <button onclick="removeFromCart(${t.id})" style="background:none;border:none;cursor:pointer;opacity:.5;padding:4px;transition:opacity .2s;color:var(--c-text)" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    `;
+    itemsWrap.appendChild(item);
+  });
+}
+
+function openCart(){
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeCart(){
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function handleCheckout(){
+  const ids=Object.keys(cart);
+  if(!ids.length)return;
+  const total=ids.reduce((s,id)=>{const t=templates.find(x=>x.id==id);return t?s+t.price:s;},0);
+  closeCart();
+  setTimeout(()=>alert(`🎉 Purchase Successful!\n\nYou've purchased ${ids.length} template${ids.length!==1?'s':''} for $${total}.\n\nDownload links have been sent to your email.`),200);
+  clearCart();
+}
+
+let toastCounter=0;
+function showToast(icon,title,msg){
+  const wrap=document.getElementById('toast-container');
+  const toast=document.createElement('div');
+  toast.className='toast';
+  toast.innerHTML=`<span style="font-size:1.1rem">${icon}</span><div><div style="font-weight:600;font-size:13px">${title}</div><div style="font-size:12px;opacity:.7;margin-top:1px">${msg}</div></div>`;
+  wrap.appendChild(toast);
+  setTimeout(()=>{try{wrap.removeChild(toast)}catch(e){}},2900);
+}
+
+buildFilterPills();
+applyFilters();
+updateCartUI();
+</script>
 </body>
 </html>
